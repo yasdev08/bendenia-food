@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bendenia Food — Link-in-Bio
 
-## Getting Started
+Mobile-first landing page that turns social-media visitors into WhatsApp orders.
+Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Framer Motion · Lucide.
 
-First, run the development server:
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run build && npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Add your food photos (important)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+No photos are bundled yet — the page shows labelled placeholders (e.g. `photos/hero.jpg`).
+Drop your images into **`public/photos/`** and rebuild:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| File                     | Used for                                   |
+| ------------------------ | ------------------------------------------ |
+| `hero.jpg` (png/webp ok) | Large top photo — use your strongest shot  |
+| `01.jpg`, `02.jpg`, …    | Gallery, in file-name order                |
 
-## Learn More
+Real dimensions are read at build time, so photos are never stretched and the gallery keeps their natural proportions. Clicking a gallery photo opens a lightbox (swipe / arrow keys / Esc).
 
-To learn more about Next.js, take a look at the following resources:
+## Edit business info
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Everything (phone, WhatsApp link + pre-filled message, social links, site URL) lives in **`config/site.ts`**.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Set the public URL for Open Graph / sitemap when deploying:
 
-## Deploy on Vercel
+```
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## What's inside
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Hero** — typographic wordmark (not a logo), "Le goût qui vous rassemble.", animated "Commander maintenant" → WhatsApp. Entrance animations are pure CSS so the first screen paints instantly, even before JS loads.
+- **Actions** — Commander sur WhatsApp · Enregistrer le contact · Appeler.
+- **Save contact** — `GET /bendenia-food.vcf` (route handler, `lib/vcard.ts`): vCard 3.0, CRLF, name/org "Bendenia Food", `+213665006559`, WhatsApp + socials as labelled URLs. It's a real URL (not a JS blob), so it works inside Instagram/TikTok/Facebook in-app browsers; iOS opens the native "Add contact" sheet, Android downloads and opens Contacts.
+- **Social** — Instagram, Facebook, TikTok cards with brand icons.
+- **Gallery** — masonry grid, hover zoom, scroll reveals, lightbox.
+- **Sticky WhatsApp bar** (mobile) — appears after the hero CTA scrolls away, hides at the footer.
+- **SEO** — metadata, Open Graph + Twitter card (generated image at `/opengraph-image`), favicon/apple icon, `robots.txt`, `sitemap.xml`, Restaurant JSON-LD.
+- **Accessibility** — semantic landmarks, `lang="fr"`, focus rings, lightbox focus trap/restore, `prefers-reduced-motion` respected.
