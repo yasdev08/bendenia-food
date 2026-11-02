@@ -47,7 +47,14 @@ function readAlts(): Record<string, string> {
   }
 }
 
-export function getPhotos(): { hero: Photo | null; gallery: Photo[] } {
+/**
+ * Cached ("use cache") so the file reads run once and the result is captured in
+ * the prerendered static shell — Cache Components forbids uncached synchronous
+ * IO during prerender. Photos only change between builds; in `next dev`,
+ * restart the dev server after adding or replacing photos.
+ */
+export async function getPhotos(): Promise<{ hero: Photo | null; gallery: Photo[] }> {
+  "use cache";
   const alts = readAlts();
   let files: string[] = [];
   try {

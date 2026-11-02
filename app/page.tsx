@@ -8,8 +8,8 @@ import { StickyWhatsApp } from "@/components/StickyWhatsApp";
 import { site } from "@/config/site";
 import { getPhotos } from "@/lib/photos";
 
-export default function Home() {
-  const { hero, gallery } = getPhotos();
+export default async function Home() {
+  const { hero, gallery } = await getPhotos();
 
   const jsonLd = {
     "@context": "https://schema.org",
