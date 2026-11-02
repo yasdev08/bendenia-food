@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { imageSize } from "image-size";
@@ -25,15 +26,29 @@ const EXT = /\.(jpe?g|png|webp|avif)$/i;
 
 function read(file: string, alt: string): Photo | null {
   try {
-    const { width, height } = imageSize(fs.readFileSync(path.join(DIR, file)));
+    const buf = fs.readFileSync(path.join(DIR, file));
+    const { width, height } = imageSize(buf);
     if (!width || !height) return null;
-    return { src: `/photos/${encodeURIComponent(file)}`, width, height, alt };
+    // Content hash in the URL: replacing a photo under the same name always busts
+    // the image-optimizer and CDN caches.
+    const v = createHash("sha1").update(buf).digest("hex").slice(0, 8);
+    return { src: `/photos/${encodeURIComponent(file)}?v=${v}`, width, height, alt };
   } catch {
     return null;
   }
 }
 
+/** Optional public/photos/alt.json: { "01.jpg": "description…" } for accessible alt text. */
+function readAlts(): Record<string, string> {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(DIR, "alt.json"), "utf8"));
+  } catch {
+    return {};
+  }
+}
+
 export function getPhotos(): { hero: Photo | null; gallery: Photo[] } {
+  const alts = readAlts();
   let files: string[] = [];
   try {
     files = fs.readdirSync(DIR).filter((f) => EXT.test(f));
@@ -46,11 +61,11 @@ export function getPhotos(): { hero: Photo | null; gallery: Photo[] } {
   const rest = files.filter((f) => f !== heroFile);
 
   const gallery = rest
-    .map((f, i) => read(f, `Bendenia Food — photo ${i + 1}`))
+    .map((f, i) => read(f, alts[f] ?? `Bendenia Food — photo ${i + 1}`))
     .filter((p): p is Photo => p !== null);
 
   const hero = heroFile
-    ? read(heroFile, "Bendenia Food — notre cuisine")
+    ? read(heroFile, alts[heroFile] ?? "Bendenia Food — notre cuisine")
     : (gallery[0] ?? null);
 
   return { hero, gallery };
