@@ -1,0 +1,4 @@
+# Local-only folders — never upload to Vercel
+.claude
+.next
+node_modules
