@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import { whatsappOrderUrl } from "@/config/site";
+import { site, whatsappOrderUrl } from "@/config/site";
 import type { Photo } from "@/lib/photos";
 import { Wordmark } from "./Wordmark";
 import { PhotoPlaceholder } from "./PhotoPlaceholder";
@@ -68,6 +68,9 @@ export function Hero({ photo }: { photo: Photo | null }) {
               className="enter font-display text-[3.1rem] leading-[0.95] font-semibold tracking-[-0.02em] text-balance sm:text-6xl lg:text-[5.25rem]"
               style={{ ...d(0.42), fontVariationSettings: '"SOFT" 50, "opsz" 144' }}
             >
+              <span className="sr-only">
+                {site.name}, restaurant à {site.location.city} —{" "}
+              </span>
               Le goût qui vous{" "}
               <em className="font-medium text-orange-bright italic">rassemble.</em>
             </h1>

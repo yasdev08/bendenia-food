@@ -41,5 +41,7 @@ NEXT_PUBLIC_SITE_URL=https://your-domain.com
 - **Social** — Instagram, Facebook, TikTok cards with brand icons.
 - **Gallery** — masonry grid, hover zoom, scroll reveals, lightbox.
 - **Sticky WhatsApp bar** (mobile) — appears after the hero CTA scrolls away, hides at the footer.
-- **SEO** — metadata, Open Graph + Twitter card (generated image at `/opengraph-image`), favicon/apple icon, `robots.txt`, `sitemap.xml`, Restaurant JSON-LD.
+- **Location** — "Itinéraire" button, "Nous trouver" section (Google Maps embed loads only on tap), Maps link in footer and vCard. Coordinates/address in `config/site.ts` → `location`.
+- **SEO** — local title/description ("Restaurant à Oran"), Open Graph card built from the hero photo + brand fonts (`/opengraph-image`), geo meta tags, `robots.txt`, image `sitemap.xml`, Restaurant + WebSite JSON-LD (address, geo, map, both phones, photos, WhatsApp order action).
+- **PWA** — `app/manifest.ts`, icons in `public/icons` (+ maskable), `public/sw.js` (network-first pages, offline fallback, cached photos; bump `VERSION` to reset caches), install button on Android / hint on iOS (footer).
 - **Accessibility** — semantic landmarks, `lang="fr"`, focus rings, lightbox focus trap/restore, `prefers-reduced-motion` respected.

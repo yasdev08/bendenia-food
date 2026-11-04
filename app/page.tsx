@@ -2,24 +2,63 @@ import { Actions } from "@/components/Actions";
 import { Footer } from "@/components/Footer";
 import { Gallery } from "@/components/Gallery";
 import { Hero } from "@/components/Hero";
+import { Location } from "@/components/Location";
 import { Reveal } from "@/components/Reveal";
 import { SocialLinks } from "@/components/SocialLinks";
 import { StickyWhatsApp } from "@/components/StickyWhatsApp";
-import { site } from "@/config/site";
+import { site, whatsappOrderUrl } from "@/config/site";
 import { getPhotos } from "@/lib/photos";
 
 export default async function Home() {
   const { hero, gallery } = await getPhotos();
 
+  const loc = site.location;
+  const abs = (src: string) => new URL(src, site.url).toString();
+  const images = [hero, ...gallery].filter((p) => p !== null).map((p) => abs(p.src));
+  const restaurantId = `${site.url}/#restaurant`;
+
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Restaurant",
-    name: site.name,
-    url: site.url,
-    telephone: site.phone.e164,
-    slogan: site.tagline,
-    sameAs: Object.values(site.socials),
-    ...(hero ? { image: new URL(hero.src, site.url).toString() } : {}),
+    "@graph": [
+      {
+        "@type": "Restaurant",
+        "@id": restaurantId,
+        name: site.name,
+        description: site.description,
+        url: site.url,
+        telephone: site.phone.e164,
+        contactPoint: [
+          { "@type": "ContactPoint", telephone: site.phone.e164, contactType: "reservations", areaServed: "DZ", availableLanguage: ["fr", "ar"] },
+          { "@type": "ContactPoint", telephone: site.phone2.e164, contactType: "customer service", areaServed: "DZ", availableLanguage: ["fr", "ar"] },
+        ],
+        slogan: site.tagline,
+        ...(images.length ? { image: images } : {}),
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: `${loc.street}, ${loc.district}`,
+          addressLocality: loc.city,
+          addressRegion: loc.region,
+          postalCode: loc.postalCode,
+          addressCountry: loc.countryCode,
+        },
+        geo: { "@type": "GeoCoordinates", latitude: loc.lat, longitude: loc.lng },
+        hasMap: loc.mapsUrl,
+        areaServed: { "@type": "City", name: loc.city },
+        sameAs: [...Object.values(site.socials), loc.mapsUrl],
+        potentialAction: {
+          "@type": "OrderAction",
+          target: { "@type": "EntryPoint", urlTemplate: whatsappOrderUrl(), actionPlatform: ["http://schema.org/MobileWebPlatform", "http://schema.org/DesktopWebPlatform"] },
+        },
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${site.url}/#website`,
+        name: site.name,
+        url: site.url,
+        inLanguage: "fr",
+        publisher: { "@id": restaurantId },
+      },
+    ],
   };
 
   return (
@@ -40,6 +79,8 @@ export default async function Home() {
             <Gallery photos={gallery} />
           </div>
         </section>
+
+        <Location />
       </main>
 
       <Footer />

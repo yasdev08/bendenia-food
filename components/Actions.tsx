@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
-import { ArrowUpRight, Phone } from "lucide-react";
-import { site, telHref, whatsappOrderUrl } from "@/config/site";
+import { ArrowUpRight, MapPin, Phone } from "lucide-react";
+import { site, tel2Href, telHref, whatsappOrderUrl } from "@/config/site";
 import { SaveContactButton } from "./SaveContactButton";
 import { WhatsAppIcon } from "./icons/BrandIcons";
 
@@ -35,14 +35,37 @@ export function Actions() {
 
           <SaveContactButton />
 
-          <a
-            href={telHref}
-            className="group flex items-center justify-center gap-2.5 rounded-2xl border border-sand bg-white/50 px-5 py-3.5 font-semibold text-burgundy transition duration-300 hover:border-burgundy hover:bg-white"
-          >
-            <Phone className="size-[18px] transition-transform duration-300 group-hover:-rotate-12" aria-hidden="true" />
-            Appeler
-            <span className="font-normal text-cocoa">· {site.phone.display}</span>
-          </a>
+          <div className="grid grid-cols-2 gap-2.5">
+            <a
+              href={telHref}
+              aria-label={`Appeler le ${site.phone.display}`}
+              className="group flex items-center justify-center gap-2 rounded-2xl border border-sand bg-white/50 px-3 py-3.5 font-semibold text-burgundy transition duration-300 hover:border-burgundy hover:bg-white"
+            >
+              <Phone className="size-[18px] transition-transform duration-300 group-hover:-rotate-12" aria-hidden="true" />
+              Appeler
+            </a>
+            <a
+              href={site.location.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-center gap-2 rounded-2xl border border-sand bg-white/50 px-3 py-3.5 font-semibold text-burgundy transition duration-300 hover:border-burgundy hover:bg-white"
+            >
+              <MapPin className="size-[18px] transition-transform duration-300 group-hover:-translate-y-0.5" aria-hidden="true" />
+              Itinéraire
+              <span className="sr-only"> (Google Maps, nouvel onglet)</span>
+            </a>
+          </div>
+
+          <p className="text-center text-[0.82rem] text-cocoa">
+            Appels :{" "}
+            <a href={telHref} className="font-semibold text-burgundy underline-offset-4 hover:underline">
+              {site.phone.display}
+            </a>{" "}
+            ·{" "}
+            <a href={tel2Href} className="font-semibold text-burgundy underline-offset-4 hover:underline">
+              {site.phone2.display}
+            </a>
+          </p>
         </div>
       </div>
     </section>
